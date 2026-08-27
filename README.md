@@ -11,6 +11,14 @@ A responsive real estate portal built with Express, vanilla JavaScript, Tailwind
 
 The app creates and updates `data/store.json` automatically. Uploaded images are stored in `public/uploads/`.
 
+## Supabase setup
+
+1. Run `supabase-schema.sql` in the Supabase SQL Editor.
+2. Set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` in `.env` locally or in your hosting provider.
+3. Use the Supabase publishable key only for browser-side integrations. Never expose the secret key or commit `.env`.
+
+When the Supabase variables are configured, listings and user accounts use Supabase. Without them, local development falls back to `data/store.json`.
+
 ## Test the flows
 
 - Browse the seeded listings on the home page.

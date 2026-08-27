@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
+const supabase = require('./supabase');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,26 +42,31 @@ function auth(req, res, next) {
   try { req.user = jwt.verify(token, JWT_SECRET); next(); } catch { res.status(401).json({ error: 'Please log in to continue.' }); }
 }
 function adminOnly(req, res, next) { if (req.user?.role !== 'admin') return res.status(403).json({ error: 'Admin access required.' }); next(); }
+const asyncRoute = (handler) => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 
-app.get('/api/properties', (_, res) => res.json(readStore().properties));
-app.post('/api/auth/signup', async (req, res) => {
+app.get('/api/properties', asyncRoute(async (_, res) => {
+  res.json(supabase.enabled ? await supabase.listProperties() : readStore().properties);
+}));
+app.post('/api/auth/signup', asyncRoute(async (req, res) => {
   const { name, email, password } = req.body;
   if (!name?.trim() || !email?.trim() || !password || password.length < 8) return res.status(400).json({ error: 'Name, email, and a password of 8+ characters are required.' });
-  const store = readStore();
   const normalized = email.trim().toLowerCase();
-  if ((ADMIN_EMAIL && normalized === ADMIN_EMAIL) || store.users.some((user) => user.email === normalized)) return res.status(409).json({ error: 'An account with this email already exists.' });
+  const existingUser = supabase.enabled ? await supabase.findUser(normalized) : readStore().users.find((user) => user.email === normalized);
+  if ((ADMIN_EMAIL && normalized === ADMIN_EMAIL) || existingUser) return res.status(409).json({ error: 'An account with this email already exists.' });
   const user = { id: crypto.randomUUID(), name: name.trim(), email: normalized, passwordHash: await bcrypt.hash(password, 12), role: 'user', createdAt: new Date().toISOString() };
-  store.users.push(user); writeStore(store);
+  if (supabase.enabled) await supabase.createUser(user);
+  else { const store = readStore(); store.users.push(user); writeStore(store); }
   res.status(201).json({ token: tokenFor(user), user: { name: user.name, email: user.email, role: user.role } });
-});
-app.post('/api/auth/login', async (req, res) => {
+}));
+app.post('/api/auth/login', asyncRoute(async (req, res) => {
   const email = req.body.email?.trim().toLowerCase();
   const password = req.body.password;
   if (ADMIN_EMAIL && ADMIN_PASSWORD && email === ADMIN_EMAIL && password === ADMIN_PASSWORD) return res.json({ token: tokenFor({ id: 'admin', email: ADMIN_EMAIL, name: 'Savley Admin', role: 'admin' }), user: { name: 'Savley Admin', email: ADMIN_EMAIL, role: 'admin' } });
-  const user = readStore().users.find((candidate) => candidate.email === email);
+  const user = supabase.enabled ? await supabase.findUser(email) : readStore().users.find((candidate) => candidate.email === email);
+  if (user && supabase.enabled) user.passwordHash = user.password_hash;
   if (!user || !(await bcrypt.compare(password || '', user.passwordHash))) return res.status(401).json({ error: 'Email or password is incorrect.' });
   res.json({ token: tokenFor(user), user: { name: user.name, email: user.email, role: user.role } });
-});
+}));
 app.post('/api/properties', auth, adminOnly, upload.fields([{ name: 'imageFiles', maxCount: 12 }, { name: 'videoFiles', maxCount: 4 }]), (req, res) => {
   const { title, price, description, imageUrl, type, location } = req.body;
   const numericPrice = Number(price);
@@ -69,18 +75,25 @@ app.post('/api/properties', auth, adminOnly, upload.fields([{ name: 'imageFiles'
   if (!title?.trim() || !Number.isFinite(numericPrice) || numericPrice <= 0 || !description?.trim() || !['house', 'land'].includes(type) || !location?.trim()) return res.status(400).json({ error: 'Title, type, location, valid price, and description are required.' });
   const fallbackImage = imageUrl?.trim() || 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85';
   const property = { id: crypto.randomUUID(), title: title.trim(), type, location: location.trim(), price: numericPrice, image: images[0] || fallbackImage, images: images.length ? images : [fallbackImage], videos, description: description.trim(), createdAt: new Date().toISOString() };
+  if (supabase.enabled) return supabase.createProperty(property).then((created) => res.status(201).json(created));
   const store = readStore(); store.properties.unshift(property); writeStore(store);
   res.status(201).json(property);
 });
-app.delete('/api/properties/:id', auth, adminOnly, (req, res) => {
+app.delete('/api/properties/:id', auth, adminOnly, asyncRoute(async (req, res) => {
+  if (supabase.enabled) {
+    const property = await supabase.deleteProperty(req.params.id);
+    if (!property) return res.status(404).json({ error: 'Property not found.' });
+    return res.json({ property });
+  }
   const store = readStore();
   const propertyIndex = store.properties.findIndex((property) => property.id === req.params.id);
   if (propertyIndex === -1) return res.status(404).json({ error: 'Property not found.' });
   const [property] = store.properties.splice(propertyIndex, 1);
   writeStore(store);
   res.json({ property });
-});
+}));
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('/admin.html', (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('*', (_, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.use((error, _, res, next) => { console.error(error); if (res.headersSent) return next(error); res.status(500).json({ error: 'Something went wrong on the server.' }); });
 app.listen(PORT, () => console.log(`Savley Global Property running at http://localhost:${PORT}`));
