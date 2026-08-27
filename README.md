@@ -23,7 +23,7 @@ When the Supabase variables are configured, listings and user accounts use Supab
 
 - Browse the seeded listings on the home page.
 - Click **Sign in**, switch to **Create an account**, and register with an 8+ character password. Accounts are stored with bcrypt password hashes.
-- Configure `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `JWT_SECRET` in a local `.env` file before signing in to the admin portal. Publish with an image URL or a local image upload; the new card appears immediately.
+- Configure `ADMIN_EMAIL=Savleyglobalproperty@gmai.com`, `ADMIN_PASSWORD`, and `JWT_SECRET` in a local `.env` file before signing in to the admin portal. Publish with an image URL or a local image upload; the new card appears immediately.
 - A normal user token receives `403 Admin access required` if it calls the property creation route.
 
 For production, set all three environment variables with strong, private values. The server generates a temporary JWT secret when `JWT_SECRET` is missing, which logs out users whenever the process restarts.
