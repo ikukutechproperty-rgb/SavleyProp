@@ -9,13 +9,14 @@ const multer = require('multer');
 const supabase = require('./supabase');
 
 const app = express();
+const isVercel = process.env.VERCEL === '1';
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const dataDir = path.join(__dirname, 'data');
+const dataDir = isVercel ? path.join('/tmp', 'savley-data') : path.join(__dirname, 'data');
 const dataFile = path.join(dataDir, 'store.json');
-const uploadDir = path.join(__dirname, 'public', 'uploads');
+const uploadDir = isVercel ? path.join('/tmp', 'savley-uploads') : path.join(__dirname, 'public', 'uploads');
 fs.mkdirSync(dataDir, { recursive: true });
 fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -96,4 +97,5 @@ app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin
 app.get('/admin.html', (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 app.get('*', (_, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.use((error, _, res, next) => { console.error(error); if (res.headersSent) return next(error); res.status(500).json({ error: 'Something went wrong on the server.' }); });
-app.listen(PORT, () => console.log(`Savley Global Property running at http://localhost:${PORT}`));
+if (!isVercel) app.listen(PORT, () => console.log(`Savley Global Property running at http://localhost:${PORT}`));
+module.exports = app;
