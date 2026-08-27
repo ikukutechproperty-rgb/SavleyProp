@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Thoughtfully selected homes and investment properties from Savley Global Property.">
+  <title>Savley Global Property | Find your next address</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div id="splash" class="splash"><div class="splash-mark">⌂</div><div class="splash-name">SAVLEY <span>GLOBAL PROPERTY</span></div></div>
+  <header class="site-header"><a class="brand" href="#home"><span class="brand-mark">⌂</span><span>SAVLEY <small>GLOBAL PROPERTY</small></span></a><nav><a href="#properties">Properties</a><a href="#about">Our approach</a><button class="outline-button" data-open-auth>Sign in</button></nav><button class="menu-button" aria-label="Open menu" aria-expanded="false">☰</button><div class="mobile-nav"><a href="#properties">Properties</a><a href="#about">Our approach</a><button class="outline-button" data-open-auth>Sign in</button></div></header>
+  <main id="home">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Curated homes. Considered guidance.</p>
+        <div class="hero-title-wrap">
+          <span class="property-tag">The Meridian Villa</span>
+          <h1 aria-label="Find a place worth coming home to."><span class="headline-line">Find a place</span><span class="headline-line accent-line"><em>worth coming home to.</em></span></h1>
+        </div>
+        <p class="hero-text">A more thoughtful way to buy, sell, and discover property across Nigeria and beyond.</p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#properties">Explore properties <span>↗</span></a>
+          <a class="secondary-button" href="#about">Our approach</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Featured property preview">
+        <div class="hero-image">
+          <div class="hero-caption"><span>01 / FEATURED COLLECTION</span><strong>Where life finds its<br>best setting.</strong></div>
+        </div>
+        <div class="floating-card floating-card-top">
+          <span class="mini-label">Client satisfaction</span>
+          <strong>4.9/5</strong>
+          <small>Across 320+ private sales</small>
+        </div>
+        <div class="floating-card floating-card-bottom">
+          <span class="mini-label">Market insight</span>
+          <strong>₦1.8B+</strong>
+          <small>Portfolio value closed</small>
+        </div>
+      </div>
+      <form class="property-finder" id="property-finder">
+        <div><span>Looking for</span><select name="type"><option value="all">Any property</option><option value="house">A house</option><option value="land">Land</option></select></div>
+        <div><span>Where</span><input name="location" placeholder="City or neighborhood"></div>
+        <button class="finder-button" type="submit" aria-label="Search properties">⌕</button>
+      </form>
+    </section>
+    <section class="stats-bar" aria-label="Key business stats">
+      <div><span>14</span><small>Prime neighborhoods</small></div>
+      <div><span>3.2k</span><small>Homes sold</small></div>
+      <div><span>96%</span><small>Repeat client rate</small></div>
+      <div><span>18 yrs</span><small>Trusted advisory</small></div>
+    </section>
+    <section class="intro" id="about">
+      <div>
+        <p class="eyebrow">The Savley difference</p>
+        <h2>Property, with a<br><em>human perspective.</em></h2>
+      </div>
+      <p>We pair local knowledge with a global eye to make every property decision feel clear, confident, and entirely yours.</p>
+    </section>
+    <section class="showcase">
+      <div class="section-heading showcase-heading">
+        <div>
+          <p class="eyebrow">Editorial picks</p>
+          <h2>Signature addresses</h2>
+        </div>
+        <a href="#properties" class="view-link">View collection <span>↗</span></a>
+      </div>
+      <div class="showcase-grid">
+        <article class="showcase-feature">
+          <div class="feature-copy">
+            <p class="eyebrow">Luxury living</p>
+            <h3>Oceanfront villas designed for slower days and brighter evenings.</h3>
+            <p>Thoughtful architecture, generous natural light, and serene surroundings create a way of living that feels effortlessly elevated.</p>
+          </div>
+          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=90" alt="Luxury villa exterior">
+        </article>
+        <article class="mini-feature">
+          <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=800&q=90" alt="Modern family home">
+          <div>
+            <p class="mini-label">Westchester</p>
+            <h4>Quiet luxury in the heart of the city.</h4>
+          </div>
+        </article>
+        <article class="mini-feature">
+          <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=90" alt="Terrace home">
+          <div>
+            <p class="mini-label">Lekki</p>
+            <h4>Private courtyards and panoramic terraces.</h4>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="properties-section" id="properties"><div class="section-heading"><div><p class="eyebrow">The collection</p><h2>Featured properties</h2></div><span id="property-count" class="property-count"></span></div><div id="property-grid" class="property-grid"><div class="loading">Loading the collection...</div></div></section>
+    <section class="contact-band"><p class="eyebrow">Let’s find your next chapter</p><h2>Have a property<br><em>in mind?</em></h2><button class="light-button" type="button" data-open-contact>Start a conversation <span>↗</span></button></section>
+  </main>
+  <footer><a class="brand footer-brand" href="#home"><span class="brand-mark">⌂</span><span>SAVLEY <small>GLOBAL PROPERTY</small></span></a><div><a href="mailto:Savleyglobalproperty@gmail.com">Savleyglobalproperty@gmail.com</a><a href="tel:+2347065301595">+234 706 530 1595</a></div><span class="copyright">© 2026 Savley Global Property</span></footer>
+  <div id="auth-modal" class="modal hidden"><div class="modal-panel auth-panel"><button class="close-modal" data-close-auth>×</button><div class="form-brand"><span class="brand-mark">⌂</span><div>SAVLEY <small>GLOBAL PROPERTY</small></div></div><p class="eyebrow">Private client access</p><h2 id="auth-title">Sign in</h2><p class="form-intro">Your next address starts here.</p><form id="auth-form"><div id="name-field" class="hidden"><label>Full name<input name="name" autocomplete="name"></label></div><label>Email address<input name="email" type="email" required autocomplete="email"></label><label>Password<input name="password" type="password" required minlength="8" autocomplete="current-password"></label><button class="primary-button" type="submit">Continue securely <span>↗</span></button><p id="auth-message" class="form-message"></p></form><button id="auth-switch" class="text-button" type="button">Create an account</button></div></div>
+  <div id="contact-modal" class="modal hidden"><div class="modal-panel contact-choice-panel"><button class="close-modal" data-close-contact>×</button><p class="eyebrow">Choose your next step</p><h2>Let’s talk property.</h2><p class="form-intro">Reach us in the way that suits you best.</p><div class="contact-options"><a class="contact-option" href="https://wa.me/2347065301595?text=Hello%20Savley%20Global%20Property" target="_blank" rel="noreferrer"><strong>WhatsApp</strong><span>Message our team directly ↗</span></a><a class="contact-option" href="mailto:Savleyglobalproperty@gmail.com"><strong>Gmail</strong><span>Send us an email ↗</span></a><a class="contact-option" href="#properties" data-close-contact><strong>Search properties</strong><span>Browse the collection ↗</span></a></div></div></div>
+  <div id="admin-modal" class="modal hidden"><div class="modal-panel admin-panel"><button class="close-modal" data-close-admin>×</button><div class="admin-heading"><div><p class="eyebrow">Savley studio</p><h2>New listing</h2></div><span class="admin-status">● Admin workspace</span></div><p class="form-intro">Shape the full story of a property, from its category to every visual detail.</p><form id="property-form" enctype="multipart/form-data"><div class="form-grid"><label>Property title<input name="title" placeholder="e.g. The Meridian Villa" required></label><label>Property type<select name="type" required><option value="">Choose type</option><option value="house">House</option><option value="land">Land</option></select></label></div><div class="form-grid"><label>Location<input name="location" placeholder="e.g. Lekki Phase 1, Lagos" required></label><label>Price in NGN<input name="price" type="number" min="1" placeholder="185000000" required></label></div><label>Image URL <span class="label-note">Optional if uploading below</span><input name="imageUrl" type="url" placeholder="https://..."></label><div class="upload-grid"><label class="upload-box"><span class="upload-icon">＋</span><strong>Property images</strong><small>Upload up to 12 images</small><input name="imageFiles" type="file" accept="image/*" multiple></label><label class="upload-box"><span class="upload-icon">▶</span><strong>Property videos</strong><small>Upload up to 4 videos</small><input name="videoFiles" type="file" accept="video/*" multiple></label></div><label>Description<textarea name="description" rows="4" placeholder="Tell buyers what makes this property special..." required></textarea><button class="primary-button publish-button" type="submit">Publish listing <span>↗</span></button><p id="property-message" class="form-message"></p></form></div></div>
+  <script src="/app.js"></script>
+</body></html>

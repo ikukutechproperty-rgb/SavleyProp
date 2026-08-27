@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Savley Studio | Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-page="admin">
+  <section id="admin-auth-gate" class="admin-auth-gate">
+    <div class="admin-auth-card">
+      <a class="dashboard-brand" href="/"><span class="brand-mark">⌂</span><div><span>SAVLEY</span><small>STUDIO</small></div></a>
+      <p class="eyebrow">Private workspace</p>
+      <h1>Welcome back.</h1>
+      <p>Sign in to manage your property collection.</p>
+      <form id="admin-auth-form">
+        <label>Email address<input name="email" type="email" required autocomplete="email" placeholder="admin email"></label>
+        <label>Password<input name="password" type="password" required autocomplete="current-password" placeholder="Your password"></label>
+        <button class="primary-button" type="submit">Enter dashboard <span>↗</span></button>
+        <p id="admin-auth-message" class="form-message"></p>
+      </form>
+      <a class="admin-back-link" href="/">Return to public site</a>
+    </div>
+  </section>
+  <div id="admin-shell" class="admin-shell hidden">
+    <aside class="dashboard-sidebar">
+      <a class="dashboard-brand" href="/">
+        <span class="brand-mark">⌂</span>
+        <div><span>SAVLEY</span><small>STUDIO</small></div>
+      </a>
+      <nav class="dashboard-nav" aria-label="Admin navigation">
+        <a class="active" href="/admin">Overview</a>
+        <a href="#properties">Listings</a>
+        <a href="#">Leads</a>
+        <a href="#">Analytics</a>
+        <a href="#">Settings</a>
+      </nav>
+      <div class="sidebar-card">
+        <p class="eyebrow">Quick action</p>
+        <h4>Launch a new property</h4>
+        <button type="button" class="primary-button dashboard-button" data-open-admin>+ Add listing</button>
+      </div>
+    </aside>
+
+    <main class="dashboard-main">
+      <header class="dashboard-topbar">
+        <div>
+          <p class="dashboard-kicker">Good morning</p>
+          <h2>Portfolio overview</h2>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="secondary-dashboard-button">Export</button>
+          <button type="button" class="primary-button dashboard-button" data-open-admin>+ New listing</button>
+          <button type="button" class="secondary-dashboard-button" id="logout-admin">Logout</button>
+        </div>
+      </header>
+
+      <div class="kpi-grid">
+        <article class="kpi-card accent">
+          <span class="kpi-label">Total portfolio</span>
+          <strong id="kpi-portfolio">₦0</strong>
+          <small>Updated from recorded listings</small>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Active listings</span>
+          <strong id="kpi-listings">0</strong>
+          <small>Across premium markets</small>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Occupancy</span>
+          <strong id="kpi-occupancy">0%</strong>
+          <small>Based on recorded purchases</small>
+        </article>
+        <article class="kpi-card">
+          <span class="kpi-label">Qualified leads</span>
+          <strong id="kpi-leads">0</strong>
+          <small>Recorded client inquiries</small>
+        </article>
+      </div>
+
+      <div class="dashboard-grid">
+        <section class="chart-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Performance</p>
+              <h3>Market insight</h3>
+            </div>
+            <span class="panel-tag">YTD</span>
+          </div>
+          <div class="bar-chart" aria-label="Property performance chart">
+            <p class="chart-empty">No purchase activity recorded yet.</p>
+          </div>
+        </section>
+
+        <aside class="insight-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Focus</p>
+              <h3>Priority list</h3>
+            </div>
+          </div>
+          <ul class="insight-list">
+            <li>
+              <span class="dot gold"></span>
+              <div><strong>Luxury villas</strong><small>High demand in Lekki</small></div>
+              <em>68%</em>
+            </li>
+            <li>
+              <span class="dot teal"></span>
+              <div><strong>Townhomes</strong><small>Steady conversion rate</small></div>
+              <em>54%</em>
+            </li>
+            <li>
+              <span class="dot slate"></span>
+              <div><strong>Land plots</strong><small>Strong investor interest</small></div>
+              <em>72%</em>
+            </li>
+          </ul>
+        </aside>
+      </div>
+
+      <section class="table-panel">
+        <div class="panel-header table-header">
+          <div>
+            <p class="eyebrow">Inventory</p>
+            <h3>Recent listings</h3>
+          </div>
+          <a href="/#properties" class="view-link">View all <span>↗</span></a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Status</th>
+                <th>Value</th>
+                <th>Interest</th>
+                <th>Updated</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="dashboard-table-body">
+              <tr><td colspan="6" class="loading">Loading portfolio...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="admin-modal" class="modal hidden">
+    <div class="modal-panel admin-panel">
+      <button class="close-modal" data-close-admin>×</button>
+      <div class="admin-heading">
+        <div>
+          <p class="eyebrow">Savley studio</p>
+          <h2>New listing</h2>
+        </div>
+        <span class="admin-status">● Admin workspace</span>
+      </div>
+      <p class="form-intro">Shape the full story of a property, from its category to every visual detail.</p>
+      <form id="property-form" enctype="multipart/form-data">
+        <div class="form-grid">
+          <label>Property title<input name="title" placeholder="e.g. The Meridian Villa" required></label>
+          <label>Property type<select name="type" required><option value="">Choose type</option><option value="house">House</option><option value="land">Land</option></select></label>
+        </div>
+        <div class="form-grid">
+          <label>Location<input name="location" placeholder="e.g. Lekki Phase 1, Lagos" required></label>
+          <label>Price in NGN<input name="price" type="number" min="1" placeholder="185000000" required></label>
+        </div>
+        <label>Image URL <span class="label-note">Optional if uploading below</span><input name="imageUrl" type="url" placeholder="https://..."></label>
+        <div class="upload-grid">
+          <label class="upload-box"><span class="upload-icon">＋</span><strong>Property images</strong><small>Upload up to 12 images</small><input name="imageFiles" type="file" accept="image/*" multiple></label>
+          <label class="upload-box"><span class="upload-icon">▶</span><strong>Property videos</strong><small>Upload up to 4 videos</small><input name="videoFiles" type="file" accept="video/*" multiple></label>
+        </div>
+        <label>Description<textarea name="description" rows="4" placeholder="Tell buyers what makes this property special..." required></textarea>
+        <button class="primary-button publish-button" type="submit">Publish listing <span>↗</span></button>
+        <p id="property-message" class="form-message"></p>
+      </form>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
