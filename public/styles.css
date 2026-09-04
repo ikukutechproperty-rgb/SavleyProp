@@ -314,7 +314,7 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
   footer div { display: block; margin: 26px 0; }
   footer div a { display: block; margin: 11px 0; }
   .modal { padding: 12px; place-items: start center; }
-  .modal-panel { width: 100%; max-height: calc(100vh - 24px); padding: 30px 20px; }
+  .modal-panel { width: 100%; max-height: calc(100dvh - 24px); padding: 30px 20px; }
   .admin-panel { padding-top: 42px; }
   .media-workspace { padding: 16px; }
   .media-workspace-heading { align-items: flex-start; flex-direction: column; gap: 7px; }
