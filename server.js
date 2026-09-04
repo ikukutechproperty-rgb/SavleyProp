@@ -35,7 +35,14 @@ const writeStore = (store) => fs.writeFileSync(dataFile, JSON.stringify(store, n
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-const upload = multer({ dest: uploadDir, limits: { fileSize: 50 * 1024 * 1024, files: 16 }, fileFilter: (_, file, cb) => cb(null, /^(image|video)\//.test(file.mimetype)) });
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (_, __, callback) => callback(null, uploadDir),
+    filename: (_, file, callback) => callback(null, `${crypto.randomUUID()}${path.extname(file.originalname).toLowerCase()}`)
+  }),
+  limits: { fileSize: 250 * 1024 * 1024 },
+  fileFilter: (_, file, callback) => callback(null, /^(video\/|image\/(jpeg|png)$)/.test(file.mimetype))
+});
 
 function tokenFor(user) { return jwt.sign({ id: user.id, email: user.email, role: user.role || 'user', name: user.name }, JWT_SECRET, { expiresIn: '2h' }); }
 function auth(req, res, next) {
@@ -68,7 +75,7 @@ app.post('/api/auth/login', asyncRoute(async (req, res) => {
   if (!user || !(await bcrypt.compare(password || '', user.passwordHash))) return res.status(401).json({ error: 'Email or password is incorrect.' });
   res.json({ token: tokenFor(user), user: { name: user.name, email: user.email, role: user.role } });
 }));
-app.post('/api/properties', auth, adminOnly, upload.fields([{ name: 'imageFiles', maxCount: 12 }, { name: 'videoFiles', maxCount: 4 }]), (req, res) => {
+app.post('/api/properties', auth, adminOnly, upload.fields([{ name: 'imageFiles' }, { name: 'videoFiles' }]), (req, res) => {
   const { title, price, description, imageUrl, type, location } = req.body;
   const numericPrice = Number(price);
   const images = (req.files?.imageFiles || []).map((file) => `/uploads/${file.filename}`);

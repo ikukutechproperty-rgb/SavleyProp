@@ -102,6 +102,16 @@ async function handleProperty(event) { event.preventDefault(); const button = ev
 if ($('#auth-form')) $('#auth-form').addEventListener('submit', handleAuth);
 if ($('#admin-auth-form')) $('#admin-auth-form').addEventListener('submit', handleAdminLogin);
 if ($('#property-form')) $('#property-form').addEventListener('submit', handleProperty);
+document.querySelectorAll('.upload-box input[type="file"]').forEach((input) => {
+  input.addEventListener('change', () => {
+    const box = input.closest('.upload-box');
+    const summary = box?.querySelector('.upload-summary');
+    if (!summary) return;
+    const count = input.files.length;
+    box.classList.toggle('is-selected', count > 0);
+    summary.textContent = count ? `${count} file${count === 1 ? '' : 's'} selected` : '';
+  });
+});
 document.addEventListener('click', (event) => {
   const button = event.target.closest('[data-delete-property]');
   if (button) handleDelete(button.dataset.deleteProperty, button);
