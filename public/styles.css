@@ -133,6 +133,7 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
 .modal label { display: grid; gap: 7px; color: #526b7c; font-size: .84rem; }
 .modal input, .modal textarea { width: 100%; padding: 12px; border: 1px solid #c6d4de; color: var(--ink); background: #fff; font: inherit; resize: vertical; }
 .form-message { min-height: 16px; margin: 0; color: #a75e32; font-size: .82rem; }
+.form-message.success { color: #5a816f; }
 .text-button { margin-top: 24px; border: 0; color: #a75e32; background: none; font: inherit; font-size: .84rem; cursor: pointer; }
 .admin-panel { width: min(600px, 100%); }
 .admin-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
