@@ -41,6 +41,8 @@ initSplash();
 async function api(url, options = {}) { const response = await fetch(url, { ...options, headers: { ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }), ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}), ...(options.headers || {}) } }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || 'Something went wrong.'); return data; }
 function propertyMediaItems(property) { const images = [...new Set([...(property.images || []), property.image].filter(Boolean))]; const videos = [...new Set((property.videos || []).filter((url) => /\.(mp4|webm|ogg)(?:[?#]|$)/i.test(url)))]; return [...videos.map((src) => ({ type: 'video', src, poster: images[0] })), ...images.map((src) => ({ type: 'image', src }))]; }
 function propertyMediaMarkup(item, title) { if (item.type === 'video') { const extension = item.src.split('.').pop().split(/[?#]/)[0].toLowerCase(); const poster = item.poster ? ` poster="${item.poster}"` : ''; return `<video class="property-video" autoplay muted loop controls preload="metadata" playsinline${poster}><source src="${item.src}" type="video/${extension}"><a href="${item.src}" target="_blank" rel="noreferrer">Open property video</a></video>`; } return `<img class="property-image" src="${item.src}" alt="${title}" loading="lazy">`; }
+function showPropertyMedia(card, property, index) { const mediaItems = propertyMediaItems(property); const activeIndex = ((index % mediaItems.length) + mediaItems.length) % mediaItems.length; const stage = card.querySelector('.property-media-stage'); const item = mediaItems[activeIndex]; if (!stage || !item) return; stage.innerHTML = propertyMediaMarkup(item, property.title); card.querySelectorAll('[data-gallery-index]').forEach((thumbnail) => thumbnail.classList.toggle('is-active', Number(thumbnail.dataset.galleryIndex) === activeIndex)); }
+function startPropertySlideshows() { document.querySelectorAll('.property-card').forEach((card) => { const property = allProperties.find((candidate) => candidate.id === card.dataset.propertyId); const mediaItems = property ? propertyMediaItems(property) : []; if (!property || mediaItems.length < 2) return; card._slideshowTimer = window.setInterval(() => { if (document.hidden) return; const activeThumbnail = card.querySelector('.media-thumbnail.is-active'); const currentIndex = Number(activeThumbnail?.dataset.galleryIndex || 0); showPropertyMedia(card, property, currentIndex + 1); }, 3000); }); }
 function propertyCard(property) { const mediaItems = propertyMediaItems(property); const firstMedia = mediaItems[0]; const type = property.type || 'house'; const location = property.location || 'Nigeria'; const videoCount = mediaItems.filter((item) => item.type === 'video').length; const contactMessage = encodeURIComponent(`Hello Savley Global Property, I am interested in ${property.title} in ${location}.`); const mediaNote = videoCount ? `<span class="media-note">▶ ${videoCount} video${videoCount > 1 ? 's' : ''}</span>` : ''; const thumbnails = mediaItems.length > 1 ? `<div class="media-thumbnails" aria-label="More media for ${property.title}">${mediaItems.map((item, index) => `<button type="button" class="media-thumbnail${index === 0 ? ' is-active' : ''}" data-gallery-index="${index}" aria-label="View ${item.type} ${index + 1}">${item.type === 'video' ? '<span class="thumbnail-video-icon">▶</span>' : `<img src="${item.src}" alt="" loading="lazy">`}</button>`).join('')}</div>` : ''; return `<article class="property-card" data-property-id="${property.id}"><div class="property-media"><div class="property-media-stage">${propertyMediaMarkup(firstMedia, property.title)}</div><span class="type-badge">${type}</span>${mediaNote}</div>${thumbnails}<div class="property-info"><p class="location">${location}</p><h3>${property.title}</h3><div class="price">${money(property.price)}</div><p class="description">${property.description}</p><a class="contact-property-button" href="https://wa.me/2347065301595?text=${contactMessage}" target="_blank" rel="noreferrer">Contact admin <span>↗</span></a></div></article>`; }
 let allProperties = [];
 function renderProperties(properties) {
@@ -48,8 +50,9 @@ function renderProperties(properties) {
   const gridTarget = $('#property-grid');
   if (!countTarget || !gridTarget) return;
   countTarget.textContent = `${properties.length} ${properties.length === 1 ? 'property' : 'properties'}`;
+  gridTarget.querySelectorAll('.property-card').forEach((card) => window.clearInterval(card._slideshowTimer));
   gridTarget.innerHTML = properties.length ? properties.map(propertyCard).join('') : '<div class="loading">No matching properties yet. Try another search.</div>';
-  if (document.body.dataset.page !== 'admin') initPublicAnimations();
+  if (document.body.dataset.page !== 'admin') { initPublicAnimations(); startPropertySlideshows(); }
 }
 function renderDashboard(properties) {
   const dashboardRoot = $('#dashboard-table-body');
@@ -148,10 +151,8 @@ document.addEventListener('click', (event) => {
   const property = allProperties.find((candidate) => candidate.id === card?.dataset.propertyId);
   const mediaItems = property ? propertyMediaItems(property) : [];
   const item = mediaItems[Number(galleryButton.dataset.galleryIndex)];
-  const stage = card?.querySelector('.property-media-stage');
-  if (!item || !stage) return;
-  stage.innerHTML = propertyMediaMarkup(item, property.title);
-  card.querySelectorAll('[data-gallery-index]').forEach((thumbnail) => thumbnail.classList.toggle('is-active', thumbnail === galleryButton));
+  if (!item || !card) return;
+  showPropertyMedia(card, property, Number(galleryButton.dataset.galleryIndex));
 });
 if ($('#auth-switch')) $('#auth-switch').addEventListener('click', () => setAuthMode(!state.signUp));
 document.querySelectorAll('[data-open-auth]').forEach((button) => button.addEventListener('click', () => { setAuthMode(false); const mobileNav = document.querySelector('.mobile-nav'); if (mobileNav) mobileNav.classList.remove('is-open'); const menuButton = document.querySelector('.menu-button'); if (menuButton) menuButton.setAttribute('aria-expanded', 'false'); openModal('#auth-modal'); }));
