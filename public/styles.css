@@ -104,6 +104,8 @@ em { color: var(--brass); font-style: italic; }
 .property-media-stage { aspect-ratio: 1.18; background: #020b16; }
 .property-image { width: 100%; aspect-ratio: 1.18; display: block; object-fit: cover; filter: saturate(.78); transition: transform .55s ease, filter .55s ease; }
 .property-video { width: 100%; aspect-ratio: 1.18; display: block; object-fit: cover; background: #020b16; }
+.media-enter { animation: mediaEnter .65s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes mediaEnter { from { opacity: .25; transform: scale(1.035); } to { opacity: 1; transform: scale(1); } }
 .property-card:hover .property-image { transform: scale(1.04); filter: saturate(1); }
 .media-thumbnails { display: flex; gap: 7px; padding: 10px 12px; overflow-x: auto; background: #081c31; border-top: 1px solid var(--line); }
 .media-thumbnail { position: relative; width: 52px; height: 40px; flex: 0 0 auto; overflow: hidden; padding: 0; border: 1px solid transparent; background: #102a43; cursor: pointer; }
