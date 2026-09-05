@@ -129,7 +129,8 @@ em { color: var(--brass); font-style: italic; }
 .loading { padding: 50px 0; color: var(--muted); }
 .contact-band { position: relative; padding: 125px 7vw; color: var(--blue-white); background: var(--navy-deep); border-top: 1px solid var(--line); }
 .contact-band h2 { max-width: 600px; font-size: clamp(3.2rem, 5.5vw, 6rem); }
-.light-button { position: absolute; right: 7vw; bottom: 125px; padding: 16px 22px; color: var(--navy-deep); background: var(--brass); font-size: .75rem; font-weight: 700; }
+.light-button { position: absolute; right: 7vw; bottom: 125px; padding: 17px 20px; border: 1px solid var(--brass); color: var(--navy-deep); background: var(--brass); box-shadow: 8px 8px 0 rgba(200,154,99,.16); font-size: .75rem; font-weight: 700; transition: color .25s ease, background .25s ease, box-shadow .25s ease, transform .25s ease; }
+.light-button:hover { color: var(--blue-white); background: transparent; box-shadow: 4px 4px 0 rgba(200,154,99,.3); transform: translate(-2px, -2px); }
 footer { padding: 48px 7vw; display: flex; align-items: center; justify-content: space-between; gap: 25px; background: #020b16; }
 footer div { display: flex; gap: 30px; }
 footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
