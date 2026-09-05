@@ -93,6 +93,11 @@ async function handleDelete(propertyId, button) {
   }
 }
 async function loadProperties() { allProperties = await api('/api/properties'); renderProperties(allProperties); renderDashboard(allProperties); }
+function subscribeToPropertyChanges() {
+  if (!window.EventSource) return;
+  const stream = new EventSource('/api/properties/stream');
+  stream.addEventListener('properties-changed', () => loadProperties().catch(() => {}));
+}
 function openModal(id) { const modal = $(id); if (!modal) return; modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
 function closeModal(id) { const modal = $(id); if (!modal) return; modal.classList.add('hidden'); document.body.style.overflow = ''; }
 function setAuthMode(signUp) { state.signUp = signUp; const title = $('#auth-title'); const nameField = $('#name-field'); const switchButton = $('#auth-switch'); const message = $('#auth-message'); if (title) title.textContent = signUp ? 'Create account' : 'Sign in'; if (nameField) { nameField.classList.toggle('hidden', !signUp); const input = nameField.querySelector('input'); if (input) input.required = signUp; } if (switchButton) switchButton.textContent = signUp ? 'I already have an account' : 'Create an account'; if (message) message.textContent = ''; }
@@ -134,6 +139,7 @@ if (document.body.dataset.page === 'admin') {
     $('#admin-auth-gate')?.classList.add('hidden');
     $('#admin-shell')?.classList.remove('hidden');
     loadProperties().catch(() => { const target = $('#dashboard-table-body'); if (target) target.innerHTML = '<tr><td colspan="6" class="loading">Unable to load portfolio. Please refresh.</td></tr>'; });
+    subscribeToPropertyChanges();
   }
   document.getElementById('logout-admin')?.addEventListener('click', () => {
     localStorage.removeItem('savleyToken');
@@ -142,6 +148,7 @@ if (document.body.dataset.page === 'admin') {
   });
 } else {
   loadProperties().catch(() => { const target = $('#property-grid'); if (target) target.innerHTML = '<div class="loading">Unable to load properties. Is the server running?</div>'; });
+  subscribeToPropertyChanges();
   const finder = $('#property-finder');
   if (finder) {
     finder.addEventListener('submit', (event) => {

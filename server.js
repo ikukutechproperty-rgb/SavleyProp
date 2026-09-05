@@ -18,6 +18,7 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const dataDir = isVercel ? path.join('/tmp', 'savley-data') : path.join(__dirname, 'data');
 const dataFile = path.join(dataDir, 'store.json');
 const uploadDir = isVercel ? path.join('/tmp', 'savley-uploads') : path.join(__dirname, 'public', 'uploads');
+const propertySubscribers = new Set();
 fs.mkdirSync(dataDir, { recursive: true });
 fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -58,6 +59,16 @@ function auth(req, res, next) {
 }
 function adminOnly(req, res, next) { if (req.user?.role !== 'admin') return res.status(403).json({ error: 'Admin access required.' }); next(); }
 const asyncRoute = (handler) => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
+function broadcastPropertyChange() {
+  for (const response of propertySubscribers) response.write('event: properties-changed\ndata: {}\n\n');
+}
+
+app.get('/api/properties/stream', (req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' });
+  res.write(': connected\n\n');
+  propertySubscribers.add(res);
+  req.on('close', () => propertySubscribers.delete(res));
+});
 
 app.get('/api/properties', requirePersistentStorage, asyncRoute(async (_, res) => {
   res.json(supabase.enabled ? await supabase.listProperties() : readStore().properties);
@@ -92,14 +103,20 @@ app.post('/api/properties', requirePersistentStorage, auth, adminOnly, upload.fi
   if (!title?.trim() || !Number.isFinite(numericPrice) || numericPrice <= 0 || !description?.trim() || !['house', 'land'].includes(type) || !location?.trim()) return res.status(400).json({ error: 'Title, type, location, valid price, and description are required.' });
   const fallbackImage = imageUrl?.trim() || 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85';
   const property = { id: crypto.randomUUID(), title: title.trim(), type, location: location.trim(), price: numericPrice, image: images[0] || fallbackImage, images: images.length ? images : [fallbackImage], videos, description: description.trim(), createdAt: new Date().toISOString() };
-  if (supabase.enabled) return supabase.createProperty(property).then((created) => res.status(201).json(created));
+  if (supabase.enabled) {
+    const created = await supabase.createProperty(property);
+    broadcastPropertyChange();
+    return res.status(201).json(created);
+  }
   const store = readStore(); store.properties.unshift(property); writeStore(store);
+  broadcastPropertyChange();
   res.status(201).json(property);
 }));
 app.delete('/api/properties/:id', requirePersistentStorage, auth, adminOnly, asyncRoute(async (req, res) => {
   if (supabase.enabled) {
     const property = await supabase.deleteProperty(req.params.id);
     if (!property) return res.status(404).json({ error: 'Property not found.' });
+    broadcastPropertyChange();
     return res.json({ property });
   }
   const store = readStore();
@@ -107,6 +124,7 @@ app.delete('/api/properties/:id', requirePersistentStorage, auth, adminOnly, asy
   if (propertyIndex === -1) return res.status(404).json({ error: 'Property not found.' });
   const [property] = store.properties.splice(propertyIndex, 1);
   writeStore(store);
+  broadcastPropertyChange();
   res.json({ property });
 }));
 app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
