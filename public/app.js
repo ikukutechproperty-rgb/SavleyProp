@@ -1,6 +1,25 @@
 const state = { token: localStorage.getItem('savleyToken'), user: JSON.parse(localStorage.getItem('savleyUser') || 'null'), signUp: false };
 const $ = (selector) => document.querySelector(selector);
 const money = (value) => new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(value);
+function initSplash() {
+  const splash = $('#splash');
+  if (!splash) return;
+  const minimumDuration = 3000;
+  const startedAt = performance.now();
+  let closeScheduled = false;
+  const close = () => {
+    if (closeScheduled) return;
+    closeScheduled = true;
+    const remaining = Math.max(0, minimumDuration - (performance.now() - startedAt));
+    window.setTimeout(() => {
+      splash.classList.add('is-closing');
+      splash.addEventListener('transitionend', () => splash.remove(), { once: true });
+    }, remaining);
+  };
+  if (document.readyState === 'complete') close();
+  else window.addEventListener('load', close, { once: true });
+  window.setTimeout(close, minimumDuration);
+}
 function initPublicAnimations() {
   if (document.body.dataset.page === 'admin' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const revealTargets = document.querySelectorAll('.stats-bar, .intro, .showcase-heading, .showcase-feature, .mini-feature, .properties-section, .contact-band, .property-card');
@@ -18,8 +37,9 @@ function initPublicAnimations() {
   }, { threshold: .14 });
   revealTargets.forEach((target) => observer.observe(target));
 }
+initSplash();
 async function api(url, options = {}) { const response = await fetch(url, { ...options, headers: { ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }), ...(state.token ? { Authorization: `Bearer ${state.token}` } : {}), ...(options.headers || {}) } }); const data = await response.json().catch(() => ({})); if (!response.ok) throw new Error(data.error || 'Something went wrong.'); return data; }
-function propertyCard(property) { const image = property.images?.[0] || property.image; const video = property.videos?.find((url) => /\.(mp4|webm|ogg)(?:[?#]|$)/i.test(url)); const type = property.type ? property.type : 'house'; const location = property.location || 'Nigeria'; const contactMessage = encodeURIComponent(`Hello Savley Global Property, I am interested in ${property.title} in ${location}.`); const mediaNote = property.videos?.length ? `<span class="media-note">▶ ${property.videos.length} video${property.videos.length > 1 ? 's' : ''}</span>` : ''; const videoLinks = property.videos?.length ? `<div class="video-links">${property.videos.map((url, index) => `<a href="${url}" target="_blank" rel="noreferrer">Video ${index + 1} ↗</a>`).join('')}</div>` : ''; const media = video ? `<video class="property-video" controls preload="metadata" playsinline poster="${image}"><source src="${video}" type="video/${video.split('.').pop().split(/[?#]/)[0].toLowerCase()}"><a href="${video}" target="_blank" rel="noreferrer">Open property video</a></video>` : `<img class="property-image" src="${image}" alt="${property.title}" loading="lazy">`; return `<article class="property-card"><div class="property-media">${media}<span class="type-badge">${type}</span>${mediaNote}</div><div class="property-info"><p class="location">${location}</p><h3>${property.title}</h3><div class="price">${money(property.price)}</div><p class="description">${property.description}</p>${videoLinks}<a class="contact-property-button" href="https://wa.me/2347065301595?text=${contactMessage}" target="_blank" rel="noreferrer">Contact us <span>↗</span></a></div></article>`; }
+function propertyCard(property) { const image = property.images?.[0] || property.image; const video = property.videos?.find((url) => /\.(mp4|webm|ogg)(?:[?#]|$)/i.test(url)); const type = property.type ? property.type : 'house'; const location = property.location || 'Nigeria'; const mediaNote = property.videos?.length ? `<span class="media-note">▶ ${property.videos.length} video${property.videos.length > 1 ? 's' : ''}</span>` : ''; const videoLinks = property.videos?.length ? `<div class="video-links">${property.videos.map((url, index) => `<a href="${url}" target="_blank" rel="noreferrer">Video ${index + 1} ↗</a>`).join('')}</div>` : ''; const media = video ? `<video class="property-video" controls preload="metadata" playsinline poster="${image}"><source src="${video}" type="video/${video.split('.').pop().split(/[?#]/)[0].toLowerCase()}"><a href="${video}" target="_blank" rel="noreferrer">Open property video</a></video>` : `<img class="property-image" src="${image}" alt="${property.title}" loading="lazy">`; return `<article class="property-card"><div class="property-media">${media}<span class="type-badge">${type}</span>${mediaNote}</div><div class="property-info"><p class="location">${location}</p><h3>${property.title}</h3><div class="price">${money(property.price)}</div><p class="description">${property.description}</p>${videoLinks}</div></article>`; }
 let allProperties = [];
 function renderProperties(properties) {
   const countTarget = $('#property-count');

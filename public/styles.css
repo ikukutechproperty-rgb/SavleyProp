@@ -12,12 +12,12 @@
 html { scroll-behavior: smooth; }
 body { margin: 0; color: var(--blue-white); background: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 16px; }
 body:before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .2; background-image: radial-gradient(rgba(255,255,255,.16) .7px, transparent .7px); background-size: 5px 5px; }
-.splash { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--blue-white); background: var(--navy-deep); animation: splashOut .35s .25s forwards; }
+.splash { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--blue-white); background: var(--navy-deep); transition: opacity .45s ease, visibility 0s linear .45s; }
+.splash.is-closing { opacity: 0; visibility: hidden; pointer-events: none; }
 .splash-mark { color: var(--brass); font-size: 4rem; line-height: 1; opacity: 0; animation: rise .8s .15s forwards; }
 .splash-name { letter-spacing: .24em; font-size: .9rem; opacity: 0; animation: rise .8s .4s forwards; }
 .splash-name span { display: block; margin-top: 8px; color: var(--muted); text-align: center; letter-spacing: .38em; font-size: .55rem; }
 @keyframes rise { to { opacity: 1; transform: translateY(-8px); } }
-@keyframes splashOut { to { opacity: 0; visibility: hidden; } }
 .site-header { position: relative; z-index: 6; height: 92px; padding: 0 7vw; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: rgba(7,26,47,.92); }
 .brand { display: flex; align-items: center; gap: 12px; color: var(--blue-white); font-weight: 700; letter-spacing: .16em; font-size: .84rem; text-decoration: none; }
 .brand small { display: block; margin-top: 4px; color: var(--muted); font-size: .55rem; letter-spacing: .31em; }
@@ -112,9 +112,6 @@ em { color: var(--brass); font-style: italic; }
 .property-info h3 { margin: 0 0 14px; color: var(--blue-white); font: 600 1.4rem 'Playfair Display', serif; }
 .price { color: var(--brass); font-size: 1rem; font-weight: 700; letter-spacing: .04em; }
 .description { margin: 17px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.7; }
-.contact-property-button { display: inline-flex; align-items: center; gap: 12px; margin-top: 22px; padding: 11px 14px; border: 1px solid var(--brass); color: var(--brass); font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; transition: color .2s ease, background .2s ease; }
-.contact-property-button:hover { color: var(--navy-deep); background: var(--brass); }
-.contact-property-button span { font-size: 1rem; }
 .video-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .video-links a { color: var(--brass); font-size: .72rem; letter-spacing: .06em; text-decoration: none; }
 .video-links a:hover { color: var(--blue-white); }
