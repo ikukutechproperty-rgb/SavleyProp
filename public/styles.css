@@ -145,6 +145,12 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
 .form-intro { margin: -14px 0 26px; color: #627d98; font-size: .9rem; }
 .modal-panel h2 { margin-bottom: 25px; color: var(--ink); font-size: 2.3rem; }
 .close-modal { position: absolute; top: 15px; right: 20px; border: 0; color: #627d98; background: none; font-size: 1.8rem; cursor: pointer; }
+.contact-choice-panel { width: min(560px, 100%); }
+.contact-options { display: grid; gap: 11px; margin-top: 28px; }
+.contact-option { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 20px; border: 1px solid #c6d4de; color: var(--ink); background: #fff; text-decoration: none; transition: border-color .25s ease, background .25s ease, transform .25s ease, box-shadow .25s ease; }
+.contact-option:hover { border-color: var(--brass); background: #f8fbfc; box-shadow: 5px 5px 0 rgba(200,154,99,.2); transform: translate(-2px, -2px); }
+.contact-option strong { font-size: .92rem; }
+.contact-option span { color: #627d98; font-size: .78rem; text-align: right; }
 .modal form { display: grid; gap: 15px; }
 .modal label { display: grid; gap: 7px; color: #526b7c; font-size: .84rem; }
 .modal input, .modal textarea { width: 100%; padding: 12px; border: 1px solid #c6d4de; color: var(--ink); background: #fff; font: inherit; resize: vertical; }
