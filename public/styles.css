@@ -112,6 +112,9 @@ em { color: var(--brass); font-style: italic; }
 .property-info h3 { margin: 0 0 14px; color: var(--blue-white); font: 600 1.4rem 'Playfair Display', serif; }
 .price { color: var(--brass); font-size: 1rem; font-weight: 700; letter-spacing: .04em; }
 .description { margin: 17px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.7; }
+.contact-property-button { display: inline-flex; align-items: center; gap: 12px; margin-top: 22px; padding: 11px 14px; border: 1px solid var(--brass); color: var(--brass); font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; transition: color .2s ease, background .2s ease; }
+.contact-property-button:hover { color: var(--navy-deep); background: var(--brass); }
+.contact-property-button span { font-size: 1rem; }
 .video-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .video-links a { color: var(--brass); font-size: .72rem; letter-spacing: .06em; text-decoration: none; }
 .video-links a:hover { color: var(--blue-white); }
