@@ -112,6 +112,9 @@ em { color: var(--brass); font-style: italic; }
 .property-info h3 { margin: 0 0 14px; color: var(--blue-white); font: 600 1.4rem 'Playfair Display', serif; }
 .price { color: var(--brass); font-size: 1rem; font-weight: 700; letter-spacing: .04em; }
 .description { margin: 17px 0 0; color: var(--muted); font-size: .88rem; line-height: 1.7; }
+.video-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.video-links a { color: var(--brass); font-size: .72rem; letter-spacing: .06em; text-decoration: none; }
+.video-links a:hover { color: var(--blue-white); }
 .loading { padding: 50px 0; color: var(--muted); }
 .contact-band { position: relative; padding: 125px 7vw; color: var(--blue-white); background: var(--navy-deep); border-top: 1px solid var(--line); }
 .contact-band h2 { max-width: 600px; font-size: clamp(3.2rem, 5.5vw, 6rem); }
