@@ -31,3 +31,11 @@ alter table public.users enable row level security;
 create policy "Public can view properties"
 on public.properties for select
 using (true);
+
+insert into storage.buckets (id, name, public)
+values ('property-media', 'property-media', true)
+on conflict (id) do update set public = true;
+
+create policy "Public can view property media"
+on storage.objects for select
+using (bucket_id = 'property-media');

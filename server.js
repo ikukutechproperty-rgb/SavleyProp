@@ -10,6 +10,7 @@ const supabase = require('./supabase');
 
 const app = express();
 const isVercel = process.env.VERCEL === '1';
+const isHosted = isVercel || process.env.RENDER === 'true' || process.env.NODE_ENV === 'production';
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim().toLowerCase();
@@ -35,8 +36,14 @@ const writeStore = (store) => fs.writeFileSync(dataFile, JSON.stringify(store, n
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+function requirePersistentStorage(req, res, next) {
+  if (isHosted && !supabase.enabled) return res.status(503).json({ error: 'Persistent storage is not configured. Add SUPABASE_URL and SUPABASE_SECRET_KEY to the hosting environment.' });
+  next();
+}
+
 const upload = multer({
-  storage: multer.diskStorage({
+  storage: supabase.enabled ? multer.memoryStorage() : multer.diskStorage({
     destination: (_, __, callback) => callback(null, uploadDir),
     filename: (_, file, callback) => callback(null, `${crypto.randomUUID()}${path.extname(file.originalname).toLowerCase()}`)
   }),
@@ -52,10 +59,10 @@ function auth(req, res, next) {
 function adminOnly(req, res, next) { if (req.user?.role !== 'admin') return res.status(403).json({ error: 'Admin access required.' }); next(); }
 const asyncRoute = (handler) => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 
-app.get('/api/properties', asyncRoute(async (_, res) => {
+app.get('/api/properties', requirePersistentStorage, asyncRoute(async (_, res) => {
   res.json(supabase.enabled ? await supabase.listProperties() : readStore().properties);
 }));
-app.post('/api/auth/signup', asyncRoute(async (req, res) => {
+app.post('/api/auth/signup', requirePersistentStorage, asyncRoute(async (req, res) => {
   const { name, email, password } = req.body;
   if (!name?.trim() || !email?.trim() || !password || password.length < 8) return res.status(400).json({ error: 'Name, email, and a password of 8+ characters are required.' });
   const normalized = email.trim().toLowerCase();
@@ -66,7 +73,7 @@ app.post('/api/auth/signup', asyncRoute(async (req, res) => {
   else { const store = readStore(); store.users.push(user); writeStore(store); }
   res.status(201).json({ token: tokenFor(user), user: { name: user.name, email: user.email, role: user.role } });
 }));
-app.post('/api/auth/login', asyncRoute(async (req, res) => {
+app.post('/api/auth/login', requirePersistentStorage, asyncRoute(async (req, res) => {
   const email = req.body.email?.trim().toLowerCase();
   const password = req.body.password;
   if (ADMIN_EMAIL && ADMIN_PASSWORD && email === ADMIN_EMAIL && password === ADMIN_PASSWORD) return res.json({ token: tokenFor({ id: 'admin', email: ADMIN_EMAIL, name: 'Savley Admin', role: 'admin' }), user: { name: 'Savley Admin', email: ADMIN_EMAIL, role: 'admin' } });
@@ -75,19 +82,21 @@ app.post('/api/auth/login', asyncRoute(async (req, res) => {
   if (!user || !(await bcrypt.compare(password || '', user.passwordHash))) return res.status(401).json({ error: 'Email or password is incorrect.' });
   res.json({ token: tokenFor(user), user: { name: user.name, email: user.email, role: user.role } });
 }));
-app.post('/api/properties', auth, adminOnly, upload.fields([{ name: 'imageFiles' }, { name: 'videoFiles' }]), (req, res) => {
+app.post('/api/properties', requirePersistentStorage, auth, adminOnly, upload.fields([{ name: 'imageFiles' }, { name: 'videoFiles' }]), asyncRoute(async (req, res) => {
   const { title, price, description, imageUrl, type, location } = req.body;
   const numericPrice = Number(price);
-  const images = (req.files?.imageFiles || []).map((file) => `/uploads/${file.filename}`);
-  const videos = (req.files?.videoFiles || []).map((file) => `/uploads/${file.filename}`);
+  if (supabase.enabled) await supabase.ensureMediaBucket();
+  const uploadFiles = async (files = []) => supabase.enabled ? Promise.all(files.map((file) => supabase.uploadMedia(file))) : files.map((file) => `/uploads/${file.filename}`);
+  const images = await uploadFiles(req.files?.imageFiles);
+  const videos = await uploadFiles(req.files?.videoFiles);
   if (!title?.trim() || !Number.isFinite(numericPrice) || numericPrice <= 0 || !description?.trim() || !['house', 'land'].includes(type) || !location?.trim()) return res.status(400).json({ error: 'Title, type, location, valid price, and description are required.' });
   const fallbackImage = imageUrl?.trim() || 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85';
   const property = { id: crypto.randomUUID(), title: title.trim(), type, location: location.trim(), price: numericPrice, image: images[0] || fallbackImage, images: images.length ? images : [fallbackImage], videos, description: description.trim(), createdAt: new Date().toISOString() };
   if (supabase.enabled) return supabase.createProperty(property).then((created) => res.status(201).json(created));
   const store = readStore(); store.properties.unshift(property); writeStore(store);
   res.status(201).json(property);
-});
-app.delete('/api/properties/:id', auth, adminOnly, asyncRoute(async (req, res) => {
+}));
+app.delete('/api/properties/:id', requirePersistentStorage, auth, adminOnly, asyncRoute(async (req, res) => {
   if (supabase.enabled) {
     const property = await supabase.deleteProperty(req.params.id);
     if (!property) return res.status(404).json({ error: 'Property not found.' });

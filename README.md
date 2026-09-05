@@ -14,10 +14,10 @@ The app creates and updates `data/store.json` automatically. Uploaded images are
 ## Supabase setup
 
 1. Run `supabase-schema.sql` in the Supabase SQL Editor.
-2. Set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` in `.env` locally or in your hosting provider.
+2. Set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` in `.env` locally or in your hosting provider. The service-role key is server-only.
 3. Use the Supabase publishable key only for browser-side integrations. Never expose the secret key or commit `.env`.
 
-When the Supabase variables are configured, listings and user accounts use Supabase. Without them, local development falls back to `data/store.json`.
+When the Supabase variables are configured, listings, user accounts, and uploaded media use Supabase. The schema creates a public `property-media` bucket for listing images and videos. Without the variables, local development falls back to `data/store.json`; hosted deployments refuse to use disposable local storage.
 
 ## Test the flows
 
@@ -33,7 +33,7 @@ For production, set all three environment variables with strong, private values.
 1. Push the tracked project files to GitHub. Do not commit `node_modules/`, `.env`, `data/store.json`, or uploaded media; these paths are covered by `.gitignore`.
 2. Create a Render Web Service from the GitHub repository.
 3. Use `npm install` as the build command and `npm start` as the start command.
-4. Add `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and a long random `JWT_SECRET` as Render environment variables.
+4. Add `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `JWT_SECRET`, `SUPABASE_URL`, and `SUPABASE_SECRET_KEY` as Render environment variables.
 5. Deploy and open the URL Render provides.
 
 ## API

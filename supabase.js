@@ -1,8 +1,11 @@
 const { createClient } = require('@supabase/supabase-js');
+const crypto = require('crypto');
+const path = require('path');
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false, autoRefreshToken: false } }) : null;
+const mediaBucket = 'property-media';
 
 const propertyFromRow = (row) => ({
   id: row.id,
@@ -55,6 +58,26 @@ async function deleteProperty(id) {
   return propertyFromRow(data);
 }
 
+async function ensureMediaBucket() {
+  const { data, error } = await supabase.storage.getBucket(mediaBucket);
+  if (!error && data) {
+    if (!data.public) {
+      const { error: updateError } = await supabase.storage.updateBucket(mediaBucket, { public: true });
+      if (updateError) throw updateError;
+    }
+    return;
+  }
+  const { error: createError } = await supabase.storage.createBucket(mediaBucket, { public: true });
+  if (createError && !/already exists/i.test(createError.message || '')) throw createError;
+}
+
+async function uploadMedia(file) {
+  const filePath = `${crypto.randomUUID()}${path.extname(file.originalname).toLowerCase()}`;
+  const { error } = await supabase.storage.from(mediaBucket).upload(filePath, file.buffer, { contentType: file.mimetype, upsert: false });
+  if (error) throw error;
+  return supabase.storage.from(mediaBucket).getPublicUrl(filePath).data.publicUrl;
+}
+
 async function findUser(email) {
   const { data, error } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
   if (error) throw error;
@@ -74,4 +97,4 @@ async function createUser(user) {
   return data;
 }
 
-module.exports = { enabled: Boolean(supabase), listProperties, createProperty, deleteProperty, findUser, createUser };
+module.exports = { enabled: Boolean(supabase), listProperties, createProperty, deleteProperty, findUser, createUser, ensureMediaBucket, uploadMedia };
