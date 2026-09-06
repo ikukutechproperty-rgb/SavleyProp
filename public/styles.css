@@ -212,9 +212,9 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
 .media-workspace-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 16px; }
 .media-workspace-heading h3 { margin: 0; color: var(--ink); font: 600 1.2rem 'Playfair Display', serif; }
 .media-workspace-heading > span { color: #8aa0ae; font-size: .68rem; }
-.modal { position: fixed; inset: 0; z-index: 10; padding: 20px; display: grid; place-items: center; background: rgba(2,11,22,.82); }
+.modal { position: fixed; inset: 0; z-index: 10; padding: 20px; display: grid; place-items: center; overflow-y: auto; background: rgba(2,11,22,.82); }
 .hidden { display: none !important; }
-.modal-panel { position: relative; width: min(460px, 100%); padding: 42px; background: #eef3f6; box-shadow: 0 20px 70px rgba(0,0,0,.4); }
+.modal-panel { position: relative; width: min(460px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; padding: 42px; background: #eef3f6; box-shadow: 0 20px 70px rgba(0,0,0,.4); }
 .auth-panel { width: min(490px, 100%); padding: 46px; background: var(--navy); }
 .auth-panel .form-brand { color: var(--blue-white); }
 .auth-panel .form-brand small, .auth-panel .form-intro, .auth-panel .close-modal { color: var(--muted); }
@@ -334,7 +334,8 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
   footer { display: block; padding: 38px 8vw; }
   footer div { display: block; margin: 26px 0; }
   footer div a { display: block; margin: 11px 0; }
-  .modal-panel { padding: 34px 25px; }
+  .modal { padding: 10px; align-items: start; }
+  .modal-panel { width: 100%; max-height: calc(100vh - 20px); padding: 30px 20px; }
 }
 @media (max-width: 520px) {
   .showcase-side { grid-template-columns: 1fr; }
