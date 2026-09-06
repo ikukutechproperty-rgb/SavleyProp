@@ -141,7 +141,11 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
 .modal { position: fixed; inset: 0; z-index: 10; padding: 20px; display: grid; place-items: center; background: rgba(2,11,22,.82); }
 .hidden { display: none !important; }
 .modal-panel { position: relative; width: min(460px, 100%); padding: 42px; background: #eef3f6; box-shadow: 0 20px 70px rgba(0,0,0,.4); }
-.auth-panel { width: min(490px, 100%); padding: 46px; }
+.auth-panel { width: min(490px, 100%); padding: 46px; background: var(--navy); }
+.auth-panel .form-brand { color: var(--blue-white); }
+.auth-panel .form-brand small, .auth-panel .form-intro, .auth-panel .close-modal { color: var(--muted); }
+.auth-panel label { color: #c3d0d9; }
+.auth-panel h2 { color: var(--blue-white); }
 .form-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 42px; color: var(--ink); font-weight: 700; letter-spacing: .14em; font-size: .82rem; }
 .form-brand small { display: block; margin-top: 4px; color: #627d98; font-size: .48rem; letter-spacing: .28em; }
 .form-brand .brand-mark { flex: 0 0 auto; }
