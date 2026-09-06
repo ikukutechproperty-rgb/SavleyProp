@@ -25,6 +25,9 @@ body:before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-event
 .site-header nav { display: flex; align-items: center; gap: 34px; }
 .site-header nav a, .mobile-nav a { color: var(--muted); font-size: .86rem; letter-spacing: .06em; text-decoration: none; }
 .site-header nav a:hover, .mobile-nav a:hover { color: var(--blue-white); }
+.nav-user { color: var(--blue-white); font-size: .78rem; letter-spacing: .04em; }
+.nav-logout { padding: 0; border: 0; color: var(--muted); background: none; font: inherit; font-size: .76rem; cursor: pointer; }
+.nav-logout:hover { color: var(--blue-white); }
 .outline-button, .light-button, .primary-button { border: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 24px; font: inherit; letter-spacing: .04em; text-decoration: none; }
 .outline-button { padding: 12px 20px; border: 1px solid var(--brass); color: var(--blue-white); background: transparent; font-size: .82rem; }
 .primary-button { padding: 16px 22px; color: var(--navy-deep); background: var(--brass); font-size: .82rem; font-weight: 700; }
@@ -149,6 +152,13 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
 .contact-choice-panel h2 { color: var(--blue-white); }
 .contact-choice-panel .form-intro { color: var(--muted); }
 .contact-choice-panel .close-modal { color: var(--muted); }
+.guest-panel { width: min(520px, 100%); background: var(--navy); }
+.guest-panel h2 { color: var(--blue-white); }
+.guest-panel .form-intro { color: var(--muted); }
+.guest-panel .close-modal { color: var(--muted); }
+.guest-actions { display: grid; gap: 12px; margin-top: 30px; }
+.guest-button { padding: 15px 20px; border: 1px solid #a75e32; color: #a75e32; background: transparent; font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; }
+.guest-button:hover { color: #fff; background: #a75e32; }
 .contact-options { display: grid; gap: 11px; margin-top: 28px; }
 .contact-option { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 20px; border: 1px solid #c6d4de; color: var(--ink); background: #fff; text-decoration: none; transition: border-color .25s ease, background .25s ease, transform .25s ease, box-shadow .25s ease; }
 .contact-option:hover { border-color: var(--brass); background: #f8fbfc; box-shadow: 5px 5px 0 rgba(200,154,99,.2); transform: translate(-2px, -2px); }

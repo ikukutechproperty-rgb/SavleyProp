@@ -83,6 +83,11 @@ async function findUser(email) {
   if (error) throw error;
   return data;
 }
+async function listUsers() {
+  const { data, error } = await supabase.from('users').select('email, role');
+  if (error) throw error;
+  return data;
+}
 
 async function createUser(user) {
   const { data, error } = await supabase.from('users').insert({
@@ -97,4 +102,4 @@ async function createUser(user) {
   return data;
 }
 
-module.exports = { enabled: Boolean(supabase), listProperties, createProperty, deleteProperty, findUser, createUser, ensureMediaBucket, uploadMedia };
+module.exports = { enabled: Boolean(supabase), listProperties, createProperty, deleteProperty, findUser, listUsers, createUser, ensureMediaBucket, uploadMedia };

@@ -15,6 +15,8 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.trim().toLowerCase();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const EMAIL_FROM = process.env.EMAIL_FROM || 'Savley Global Property <onboarding@resend.dev>';
 const dataDir = isVercel ? path.join('/tmp', 'savley-data') : path.join(__dirname, 'data');
 const dataFile = path.join(dataDir, 'store.json');
 const uploadDir = isVercel ? path.join('/tmp', 'savley-uploads') : path.join(__dirname, 'public', 'uploads');
@@ -59,6 +61,17 @@ function auth(req, res, next) {
 }
 function adminOnly(req, res, next) { if (req.user?.role !== 'admin') return res.status(403).json({ error: 'Admin access required.' }); next(); }
 const asyncRoute = (handler) => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
+function escapeHtml(value = '') { return String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character])); }
+async function sendEmail({ to, subject, html }) {
+  if (!RESEND_API_KEY) return;
+  const response = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: EMAIL_FROM, to: [to], subject, html }) });
+  if (!response.ok) throw new Error(`Email delivery failed with status ${response.status}.`);
+}
+async function notifyUsers(subject, html) {
+  const users = supabase.enabled ? await supabase.listUsers() : readStore().users;
+  await Promise.all(users.filter((user) => user.email && user.role !== 'admin').map((user) => sendEmail({ to: user.email, subject, html }).catch((error) => console.error(`Unable to email ${user.email}:`, error.message))));
+}
+function listingEmail(property) { return `<h2>New at Savley Global Property</h2><p>${escapeHtml(property.title)} is now available in ${escapeHtml(property.location)}.</p><p>${escapeHtml(property.description)}</p><p><strong>Price:</strong> ${Number(property.price).toLocaleString('en-NG')} NGN</p><p>Visit Savley Global Property to explore the full listing.</p>`; }
 function broadcastPropertyChange() {
   for (const response of propertySubscribers) response.write('event: properties-changed\ndata: {}\n\n');
 }
@@ -82,6 +95,7 @@ app.post('/api/auth/signup', requirePersistentStorage, asyncRoute(async (req, re
   const user = { id: crypto.randomUUID(), name: name.trim(), email: normalized, passwordHash: await bcrypt.hash(password, 12), role: 'user', createdAt: new Date().toISOString() };
   if (supabase.enabled) await supabase.createUser(user);
   else { const store = readStore(); store.users.push(user); writeStore(store); }
+  void sendEmail({ to: user.email, subject: 'Welcome to Savley Global Property', html: `<h2>Welcome, ${escapeHtml(user.name)}</h2><p>Your Savley Global Property account is ready.</p><p>You can now discover new listings and contact our team about the homes and land that interest you.</p>` }).catch((error) => console.error('Unable to send welcome email:', error.message));
   res.status(201).json({ token: tokenFor(user), user: { name: user.name, email: user.email, role: user.role } });
 }));
 app.post('/api/auth/login', requirePersistentStorage, asyncRoute(async (req, res) => {
@@ -105,12 +119,21 @@ app.post('/api/properties', requirePersistentStorage, auth, adminOnly, upload.fi
   const property = { id: crypto.randomUUID(), title: title.trim(), type, location: location.trim(), price: numericPrice, image: images[0] || fallbackImage, images: images.length ? images : [fallbackImage], videos, description: description.trim(), createdAt: new Date().toISOString() };
   if (supabase.enabled) {
     const created = await supabase.createProperty(property);
+    void notifyUsers(`New listing: ${created.title}`, listingEmail(created)).catch((error) => console.error('Unable to notify users about listing:', error.message));
     broadcastPropertyChange();
     return res.status(201).json(created);
   }
   const store = readStore(); store.properties.unshift(property); writeStore(store);
+  void notifyUsers(`New listing: ${property.title}`, listingEmail(property)).catch((error) => console.error('Unable to notify users about listing:', error.message));
   broadcastPropertyChange();
   res.status(201).json(property);
+}));
+app.post('/api/notifications/promo', requirePersistentStorage, auth, adminOnly, asyncRoute(async (req, res) => {
+  const subject = req.body.subject?.trim();
+  const message = req.body.message?.trim();
+  if (!subject || !message) return res.status(400).json({ error: 'Subject and message are required.' });
+  await notifyUsers(subject, `<h2>${escapeHtml(subject)}</h2><p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`);
+  res.json({ sent: true });
 }));
 app.delete('/api/properties/:id', requirePersistentStorage, auth, adminOnly, asyncRoute(async (req, res) => {
   if (supabase.enabled) {
