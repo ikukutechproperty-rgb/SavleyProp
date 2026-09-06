@@ -255,9 +255,9 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
 .admin-panel .admin-heading h2 { margin-bottom: 0; }
 .admin-panel .admin-status { color: #9bc6a9; }
 .admin-panel .label-note { color: #9aafbf; }
-.admin-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
+.admin-heading { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; }
 .admin-heading .eyebrow { margin-bottom: 13px; }
-.admin-status { color: #5a816f; font-size: .7rem; white-space: nowrap; }
+.admin-status { margin-top: 8px; color: #5a816f; font-size: .7rem; white-space: nowrap; }
 .form-grid, .upload-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .label-note { color: #8aa0ae; font-size: .7rem; }
 .upload-grid { margin: 1px 0; }
@@ -327,7 +327,7 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
   .dashboard-grid { grid-template-columns: 1fr; }
   .chart-panel, .insight-panel, .table-panel { padding: 22px 18px; }
   .admin-heading { display: block; }
-  .admin-status { display: block; margin: -12px 0 25px; }
+  .admin-status { display: block; margin: 12px 0 25px; }
   .contact-band { padding: 85px 8vw 105px; }
   .contact-band h2 { font-size: 3.3rem; }
   .light-button { position: static; margin-top: 34px; }
