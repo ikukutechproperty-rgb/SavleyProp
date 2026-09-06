@@ -145,7 +145,10 @@ footer a { color: var(--muted); font-size: .78rem; text-decoration: none; }
 .form-intro { margin: -14px 0 26px; color: #627d98; font-size: .9rem; }
 .modal-panel h2 { margin-bottom: 25px; color: var(--ink); font-size: 2.3rem; }
 .close-modal { position: absolute; top: 15px; right: 20px; border: 0; color: #627d98; background: none; font-size: 1.8rem; cursor: pointer; }
-.contact-choice-panel { width: min(560px, 100%); }
+.contact-choice-panel { width: min(560px, 100%); background: var(--navy); }
+.contact-choice-panel h2 { color: var(--blue-white); }
+.contact-choice-panel .form-intro { color: var(--muted); }
+.contact-choice-panel .close-modal { color: var(--muted); }
 .contact-options { display: grid; gap: 11px; margin-top: 28px; }
 .contact-option { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 20px; border: 1px solid #c6d4de; color: var(--ink); background: #fff; text-decoration: none; transition: border-color .25s ease, background .25s ease, transform .25s ease, box-shadow .25s ease; }
 .contact-option:hover { border-color: var(--brass); background: #f8fbfc; box-shadow: 5px 5px 0 rgba(200,154,99,.2); transform: translate(-2px, -2px); }
